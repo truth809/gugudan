@@ -3,58 +3,43 @@ import './App.css';
 import { useState } from 'react';
 import React from 'react';
 
-class Gugudan extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      first: Math.ceil(Math.random() * 9),
-      second: Math.ceil(Math.random() * 9),
-      value: '',
-      result: '',
-    };
-  }
-  onSubmit = (e) => {
+
+// 훅스는 상태가 바뀔때마다 통채로 재실행 됨
+const Gugudan = () => {
+  const [first, setFirst] = React.useState(Math.ceil(Math.random() * 9));
+  const [second, setSecond] = React.useState(Math.ceil(Math.random() * 9));
+  const [value, setValue] = React.useState('');
+  const [result, setResult] = React.useState('');
+  const inputRef = React.useRef(null);
+
+  const onChangeInput = (e) => {
+    setValue(e.target.value);
+  };
+  const onSubmitForm = (e) => {
     e.preventDefault();
-    if(parseInt(this.state.value) === this.state.first * this.state.second) {
-      this.setState((prevState) => {
-        return {
-          result: '정답: ' + prevState.value, //this.state.value를 간편하게
-          first: Math.ceil(Math.random() * 9),
-          second: Math.ceil(Math.random() * 9),
-          value: '',
-        }
-      });
-      this.input.focus();
+    if(parseInt(value) === first * second) {
+      setResult('정답' + value);
+      setFirst(Math.ceil(Math.random() * 9));
+      setSecond(Math.ceil(Math.random() * 9));
+      setValue('');
+      inputRef.current.focus();
     } else {
-      this.setState({
-        result: '땡',
-        value: '',
-      });
-      this.input.focus();
+      setResult('땡!');
+      setValue('');
+      inputRef.current.focus();
     }
   };
-  onChange = (e) => {
-    this.setState({ value: e.target.value});
-  };
-  onRefInput = (c) => {this.input = c;};
 
-  input;
-  
-  // setState를 할때마다 렌더 실행
-  // 렌더를 많이하면 느려짐 주의
-  // 렌더 안에 함수 밖으로 빼주기, 안빼주면 함수가 새로 계속 생기게됨
-  render() {
-    return (
-      <>
-        <div>{this.state.first} 곱하기 {this.state.second} 는?</div>
-        <form onSubmit={this.onSubmit}>
-          <input ref={this.onRefInput} type="number" value={this.state.value} onChange={this.onChange}></input>
-          <button>입력!</button>
-        </form>
-        <div>{this.state.result}</div>
-      </>
-    );
-  }
+  return (
+    <>
+      <div>{first} 곱하기 {second}</div>
+      <form onSubmit={onSubmitForm}>
+        <input ref={inputRef} onChange={onChangeInput} value={value} />
+        <button>입력!</button>
+      </form>
+      <div id="result">{result}</div>
+    </>
+  )
 }
 
 function App() {
